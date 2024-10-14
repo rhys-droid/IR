@@ -118,7 +118,6 @@ classdef Lab5Starter < handle
 
 %% CheckCollision
 % Checks for collisions with a sphere and can be modified to return an
-% Hello Hugh is here now :)
 % isCollision result
         function CheckCollision(robot, sphereCenter, radius)
         % function isCollision = CheckCollision(robot, sphereCenter, radius)

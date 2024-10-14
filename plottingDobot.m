@@ -3,10 +3,10 @@ function plottingDobot
     cartPos = [0,0,0; 0,0,0];
 
 
-    robot = LinearDobot;
-    robot.PlotAndColourRobot;
-
-    hold on
+    % robot = LinearDobot;
+    % robot.PlotAndColourRobot;
+    % 
+    % hold on
 
     hCart = PlaceObject('cart.ply', cartPos(1,:));
 
