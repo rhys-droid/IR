@@ -22,12 +22,16 @@ threeDOfBase = [1,0,0];
 
 %% Create 3DOF robot
 
-L1 = Link('d',pi/2,'a',1,'alpha',0,'qlim',[-pi pi]);
-L2 = Link('d', pi/2, 'a', 0, 'alpha', 0, 'qlim', [-pi, pi]);
-L3 = Link('d', 0, 'a', 0, 'alpha', pi/2, 'qlim', [-pi, pi]);
-robot = SerialLink([L1, L2, L3], 'name','myRobot');
+L1 = Link('d',0.5,'a',0,'alpha',-pi/2,'qlim',[-2*pi 2*pi]);
+L2 = Link('d', 0, 'a', 0.612, 'alpha', 0, 'qlim', [-pi, pi]);
+L3 = Link('d', 0, 'a', 0.57, 'alpha', 0, 'qlim', [-pi, pi]);
+L4 = Link('d', 0.563, 'a', 0, 'alpha', -pi/2, 'qlim', [-pi, pi]);
+L5 = Link('d', 0.5, 'a', 0, 'alpha', pi/2, 'qlim', [-pi, pi]);
+L6 = Link('d', 0.5, 'a', 0, 'alpha', 0, 'qlim', [-pi, pi]);
 
-q = [0, pi/2, pi/4];
+robot = SerialLink([L1, L2, L3, L4, L5, L6], 'name','myRobot');
+
+q = [0, pi/2, pi/4, 0,0,0];
 
 scale = 0.1;
 workspace = [-0.5 1.5 -0.5 1.5 0 1];
