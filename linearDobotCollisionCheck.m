@@ -4,8 +4,7 @@ classdef linearDobotCollisionCheck < handle
 
     methods
         function self = linearDobotCollisionCheck()
-			clf
-            set(0,'DefaultFigureWindowStyle','docked')		
+			clf	
             self.Part1();
             self.Part2();
         end

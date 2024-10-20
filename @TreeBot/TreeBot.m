@@ -1,17 +1,10 @@
 classdef TreeBot < RobotBaseClass
-    %% DobotMagician
-    % This class is based on the DobotMagician. 
-    % URL: https://en.dobot.cn/products/education/magician.html
-    % 
-    % WARNING: This model has been created by UTS students in the subject
-    % 41013. No guarentee is made about the accuracy or correctness of the
-    % of the DH parameters of the accompanying ply files. Do not assume
-    % that this matches the real robot!
+    %% TreeBot
+    %This class is based from an imaginary robot
+
 
     properties(Access =public)   
         plyFileNameStem = 'TreeBot';
-
-        
 
         %> defaultRealQ 
         defaultRealQ  = [0, -pi/4, pi/6, 0,0,0, 0, 0];
@@ -43,7 +36,8 @@ function self =TreeBot(baseTr)
             L7 = Link('d', 0.2, 'a', 0, 'alpha', pi/2, 'qlim', [-pi, pi]);
             L8 = Link('d', 0.2, 'a', 0, 'alpha', 0, 'qlim', [-2*pi, 2*pi]);
 
-            self.model = SerialLink([L1, L2, L3, L4, L5, L6, L7, L8], 'name','myRobot');
+            
+            self.model = SerialLink([L1, L2, L3, L4, L5, L6, L7, L8], 'name',self.name);
 
         end   
     end
