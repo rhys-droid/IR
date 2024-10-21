@@ -1,0 +1,123 @@
+classdef printing3 < LinearDobot
+    properties
+        num_layers = 20;  % Number of layers to simulate
+        fig_handle;       % Figure handle for unified plotting
+        dobot;
+    end
+
+    methods
+        function self = printing3()
+            addpath('../LinearDobot');
+            addpath('../Print Files');
+            disp('Class initialized. Starting the print function...');
+            clf;
+            
+            % Initialize Dobot
+            self = LinearDobot();
+            
+            % Setup environment
+            self.setupEnvironment();
+
+            % Load PLY and find vertices
+            vertex_matrix = self.loadPLYandFindVertices('birdhouse.ply', self.num_layers);
+            if isempty(vertex_matrix)
+                disp('Error loading PLY file. Exiting...');
+                return;
+            end
+
+            % Move robotic arm
+            self.moveRoboticArm(vertex_matrix);
+
+            % Clear traces and show final PLY model
+            self.clearTracesAndShowPLY(vertex_matrix{1});
+        end
+
+        % Function 1: Setup environment and plot the Dobot
+        function setupEnvironment(self)
+            clf;  % Clear the figure for a fresh start
+            self.fig_handle = figure(1); clf;  % Set figure handle
+            hold on;
+            grid on;
+            axis equal;
+            axis([-1 1 -1 1 -1 1]);  % Adjust workspace size if needed
+
+            % Plot the Dobot with no base or arrows for simplicity
+            q0 = zeros(1, self.model.n);  % Neutral position
+            % self.dobot.model.plot(q0, 'workspace', [-1 1 -1 1 -1 1], 'noarrow', 'nobase');
+            self.model.plot(q0, 'workspace', [-1 1 -1 1 -1 1], 'noarrow', 'nobase');
+            camlight('headlight');  % Lighting for better visualization
+            lighting gouraud;
+        end
+
+        % Function 2: Load the PLY file and find vertices
+        function [vertex_matrix] = loadPLYandFindVertices(self, ply_filename, num_layers)
+            try
+                model = pcread(ply_filename);  % Load PLY file
+                vertices = model.Location;  % Extract vertices
+
+                % Organize vertices by layers
+                z_min = min(vertices(:,3));
+                z_max = max(vertices(:,3));
+                layer_height = (z_max - z_min) / num_layers;
+
+                vertex_matrix = cell(num_layers, 1);  % Initialize vertex matrix
+                for layer = 1:num_layers
+                    z_layer_min = z_min + (layer - 1) * layer_height;
+                    z_layer_max = z_layer_min + layer_height;
+                    in_layer = vertices(:,3) >= z_layer_min & vertices(:,3) < z_layer_max;
+                    vertex_matrix{layer} = vertices(in_layer, :);
+                end
+                disp('PLY file loaded and vertices extracted successfully.');
+            catch ME
+                disp(['Error loading PLY file: ', ME.message]);
+                vertex_matrix = {};  % Return empty in case of error
+            end
+        end
+
+        % Function 3: Move the robotic arm
+        function moveRoboticArm(self, vertex_matrix)
+            disp('Starting robot movements...');
+            num_layers = length(vertex_matrix);
+
+            for layer = 1:num_layers
+                points_in_layer = vertex_matrix{layer};
+                for i = 1:size(points_in_layer, 1)-1
+                    start_point = points_in_layer(i, :);
+                    end_point = points_in_layer(i + 1, :);
+
+                    % Get inverse kinematics for the next point
+                    q_next = self.model.ikine(transl(end_point), self.dobot.model.getpos(), 'mask', [1 1 1 0 0 0]);
+                    
+                    % Create trajectory and animate
+                    q_traj = jtraj(self.model.getpos(), q_next, 50);
+                    self.animateTrajectory(q_traj);
+
+                    % Simulate printing with a red trace line
+                    plot3([start_point(1), end_point(1)], [start_point(2), end_point(2)], [start_point(3), end_point(3)], 'r', 'LineWidth', 2);
+                    pause(0.05);
+                end
+            end
+        end
+
+        % Helper function for animating trajectory
+        function animateTrajectory(self, q_traj)
+            % Function to animate the robot's movement along the trajectory
+            for i = 1:size(q_traj, 1)
+                self.dobot.model.animate(q_traj(i, :));
+                drawnow;
+            end
+        end
+
+        % Function 4: Clear traces and show the final PLY model
+        function clearTracesAndShowPLY(self, vertices)
+            disp('Clearing traces and displaying final model...');
+            cla;  % Clear the figure of previous lines
+            
+            % Plot the final PLY file model
+            plot3(vertices(:,1), vertices(:,2), vertices(:,3), 'bo', 'MarkerSize', 5);  
+            camlight('headlight');
+            lighting gouraud;
+            title('Final 3D-Printed Object');
+        end
+    end
+end
