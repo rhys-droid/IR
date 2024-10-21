@@ -14,6 +14,8 @@ classdef treeBotCollisionCheck < handle
         function Part1()
             clf
 
+            emergencyStopPressed = false;
+
             birdOnBranchPoints = cloudPoints.loadPointClouds('birdOnBranch.ply', [1.8,0.5,0]);
 
             robot = TreeBot;
@@ -31,6 +33,9 @@ classdef treeBotCollisionCheck < handle
                robot.model.animate(qMatrix(n, :));
                axis equal
                treeBotCollisionCheck.CheckCollision(robot.model, birdOnBranchPoints)
+               if emergecnyButtonPressed
+                   disp("stop");
+               end
                pause(0.1)            
 
             end
@@ -54,7 +59,15 @@ classdef treeBotCollisionCheck < handle
                 disp("No Collision");
             end
                     
-         end
+        end
+
+        function emergencyStopPressed
+            if spacebar
+                emergencyStopPressed = true;
+            else
+                emergencyStopPressed = false;
+            end
+        end
     end
 end
 
