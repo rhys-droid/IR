@@ -32,9 +32,11 @@ classdef treeBotCollisionCheck < handle
             for n = 1:steps
                robot.model.animate(qMatrix(n, :));
                axis equal
-               treeBotCollisionCheck.CheckCollision(robot.model, birdOnBranchPoints)
-               if emergecnyButtonPressed
-                   disp("stop");
+               treeBotCollisionCheck.CheckCollision(robot.model, birdOnBranchPoints);
+               %emergencyStopPressed();
+               if treeBotCollisionCheck.emergencyStopPressed()
+                   disp("Emergency stop button pressed. Stopping simulation.");
+                   return;
                end
                pause(0.1)            
 
@@ -54,19 +56,28 @@ classdef treeBotCollisionCheck < handle
         
             % Check for collision
             if withinLimits
-                disp("Crash");
+                %disp("Crash");
             else
-                disp("No Collision");
+                %disp("No Collision");
             end
                     
         end
 
-        function emergencyStopPressed
-            if spacebar
-                emergencyStopPressed = true;
+        function pressed = emergencyStopPressed()
+
+            kb = HebiKeyboard();
+            state = read(kb); 
+            %disp('in emergency pressed');
+
+            if state.SPACE
+                pressed = true;
+
             else
-                emergencyStopPressed = false;
+                pressed = false;
+                %disp('in false button pressed');
+
             end
+            
         end
     end
 end
