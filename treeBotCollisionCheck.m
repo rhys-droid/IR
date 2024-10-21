@@ -1,20 +1,21 @@
 classdef treeBotCollisionCheck < handle
 
-%#ok<*NOPRT>
+    properties
+        emergencyStopPressed = false;  % Class property
+    end
 
     methods
         function self = treeBotCollisionCheck()
-			clf	
-            self.Part1();
+            clf	
+            self.runRobot();
+            
         end
     end
 
-    methods (Static)
+    methods 
 
-        function Part1()
+        function runRobot(self)
             clf
-
-            emergencyStopPressed = false;
 
             birdOnBranchPoints = cloudPoints.loadPointClouds('birdOnBranch.ply', [1.8,0.5,0]);
 
@@ -27,15 +28,18 @@ classdef treeBotCollisionCheck < handle
              q2 = robot.model.ikcon(transl(1,0.3, 0));
 
             steps = 100;
-            qMatrix = jtraj(q1,q2,steps); % obtaing the joint space trajectory
+            qMatrix = jtraj(q1,q2,steps); % Obtaing the joint space trajectory
+
+            self.detectES();
+            
 
             for n = 1:steps
                robot.model.animate(qMatrix(n, :));
                axis equal
-               treeBotCollisionCheck.CheckCollision(robot.model, birdOnBranchPoints);
-               %emergencyStopPressed();
-               if treeBotCollisionCheck.emergencyStopPressed()
-                   disp("Emergency stop button pressed. Stopping simulation.");
+               self.CheckCollision(robot.model, birdOnBranchPoints);
+
+               if self.emergencyStopPressed
+                   disp("Emergency stop button pressed!! Stopping Robot.");
                    return;
                end
                pause(0.1)            
@@ -44,7 +48,7 @@ classdef treeBotCollisionCheck < handle
             
         end
 
-        function CheckCollision(robot, xyzLimits)
+        function CheckCollision(self,robot, xyzLimits)
 
             currentPos = robot.fkine(robot.getpos).t; % Extract the position as a 3D vector
 
@@ -63,21 +67,20 @@ classdef treeBotCollisionCheck < handle
                     
         end
 
-        function pressed = emergencyStopPressed()
-
-            kb = HebiKeyboard();
-            state = read(kb); 
-            %disp('in emergency pressed');
-
-            if state.SPACE
-                pressed = true;
-
-            else
-                pressed = false;
-                %disp('in false button pressed');
-
-            end
+        
+        function detectES(self)
+            % Create a figure
+            f = figure('KeyPressFcn', @(src, event) self.detectedEM(src, event));
+            PlaceObject('emergencyStopButton.ply');
             
+        end
+        
+        function detectedEM(self,~, event)
+            % Check if the pressed key is the space bar
+            if strcmp(event.Key, 'space')  
+                % self.emergencyStopPressed = true;
+                self.emergencyStopPressed = true;
+            end
         end
     end
 end
