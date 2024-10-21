@@ -22,7 +22,7 @@ classdef cloudPoints < handle
     methods (Static)
 %% Function to load ply file and its cloud points that has output of the XYZ limits of cloud points
 
-        function cloudPointLocation = loadPointClouds(plyFile, positionxyz)
+        function xyzLimits = loadPointClouds(plyFile, positionxyz) % Output is xyz limits of ply file
 
             if size(positionxyz) ~= 3 % Throwing error if there is invalid input
                 error('Invalid position input. Ensure format is [x, y, z]');
@@ -36,15 +36,11 @@ classdef cloudPoints < handle
             
             pcshow(PtCloudTrans); % Showing translated point clouds
             
-            %xyzLimits = [PtCloudTrans.XLimits; PtCloudTrans.YLimits; PtCloudTrans.ZLimits]; % Storing value of xyz limits of cloud points
-
-            xyzLocation = PtCloudTrans.Location;
+            xyzLimits = [PtCloudTrans.XLimits; PtCloudTrans.YLimits; PtCloudTrans.ZLimits]; % Storing value of xyz limits of cloud points
 
             PlaceObject(plyFile, positionxyz);
             
             pause(0.1);
-            
-            cloudPointLocation = xyzLocation; % Output is xyz limits of ply file
           
         end
     end 

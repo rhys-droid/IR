@@ -14,45 +14,48 @@ classdef treeBotCollisionCheck < handle
         function Part1()
             clf
 
-            birdOnBranchPoints = cloudPoints.loadPointClouds('birdOnBranch.ply', [1.8,0.3,0]);
+            birdOnBranchPoints = cloudPoints.loadPointClouds('birdOnBranch.ply', [1.8,0.5,0]);
 
             robot = TreeBot;
             robot.PlotAndColourRobot();
             
             %% Move Robot
 
-             q1 = robot.model.ikcon(transl(0.8,0.5, -0.2));
-             q2 = robot.model.ikcon(transl(0.6,1, -0.2));
+             q1 = robot.model.ikcon(transl(0.5,0.5, 0.2));
+             q2 = robot.model.ikcon(transl(1,0.3, 0));
 
-            steps = 50;
+            steps = 100;
             qMatrix = jtraj(q1,q2,steps); % obtaing the joint space trajectory
 
             for n = 1:steps
                robot.model.animate(qMatrix(n, :));
-                axis equal
-                treeBotCollisionCheck.CheckCollision(robot.model, birdOnBranchPoints)
-               pause(0.01)            
+               axis equal
+               treeBotCollisionCheck.CheckCollision(robot.model, birdOnBranchPoints)
+               pause(0.1)            
 
             end
             
         end
 
-        function CheckCollision(robot, currentCloudPoints)
+        function CheckCollision(robot, xyzLimits)
 
             currentPos = robot.fkine(robot.getpos).t; % Extract the position as a 3D vector
 
-            for i = 1:size(currentCloudPoints, 1) % Loop through the point cloud matrix
-                % Calculate the Euclidean distance
-                distance = norm(currentPos - currentCloudPoints(i, :)); % Calculate the distance
+            withinXlim = (currentPos(1) >= xyzLimits(1, 1)) && (currentPos(1) <= xyzLimits(1, 2));
+            withinYlim = (currentPos(2) >= xyzLimits(2, 1)) && (currentPos(2) <= xyzLimits(2, 2));
+            withinZlim = (currentPos(3) >= xyzLimits(3, 1)) && (currentPos(3) <= xyzLimits(3, 2));
+             
+            withinLimits = withinXlim && withinYlim && withinZlim; % Determine if the position is within all limits
         
-                if distance < 1  % Check if the distance is less than 1
-                    disp("CRASH"); % Display crash message
-                else
-                    disp("Safe distance")
-                    return;  % Exit the function after detecting a collision
-                end
+            % Check for collision
+            if withinLimits
+                disp("Crash");
+            else
+                disp("No Collision");
             end
-        end
+                    
+         end
     end
 end
+
 
