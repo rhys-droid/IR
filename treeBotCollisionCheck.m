@@ -42,7 +42,7 @@ classdef treeBotCollisionCheck < handle
                    disp("Emergency stop button pressed!! Stopping Robot.");
                    return;
                end
-               pause(0.1)            
+               pause(0.1) 
 
             end
             
@@ -60,9 +60,9 @@ classdef treeBotCollisionCheck < handle
         
             % Check for collision
             if withinLimits
-                %disp("Crash");
+                disp("Crash");
             else
-                %disp("No Collision");
+                disp("No Collision");
             end
                     
         end
@@ -78,7 +78,6 @@ classdef treeBotCollisionCheck < handle
         function detectedEM(self,~, event)
             % Check if the pressed key is the space bar
             if strcmp(event.Key, 'space')  
-                % self.emergencyStopPressed = true;
                 self.emergencyStopPressed = true;
             end
         end

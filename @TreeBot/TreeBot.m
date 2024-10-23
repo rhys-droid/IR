@@ -28,8 +28,8 @@ function self =TreeBot(baseTr)
         function CreateModel(self) 
 
             L1 = Link('d',0.3,'a',0,'alpha',-pi/2,'qlim',[-2*pi 2*pi]);
-            L2 = Link('d', 0, 'a', 0.4, 'alpha', 0, 'qlim', [-pi/2, 0]);
-            L3 = Link('d', 0, 'a', 0.4, 'alpha', 0, 'qlim', [0, pi/2]);
+            L2 = Link('d', 0, 'a', 0.4, 'alpha', 0, 'qlim', [-pi/2, pi]);
+            L3 = Link('d', 0, 'a', 0.4, 'alpha', 0, 'qlim', [-pi/2, pi]);
             L4 = Link('d', 0, 'a', 0, 'alpha', pi/2, 'qlim', [-pi/4, 5*pi/4]);
             L5 = Link('d', 0.2, 'a', 0, 'alpha', -pi/2, 'qlim', [-pi, pi]);
             L6 = Link('d', 0.2, 'a', 0, 'alpha', pi/2, 'qlim', [-pi, pi]);
