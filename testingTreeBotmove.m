@@ -12,6 +12,7 @@ birdhouseDest1 = [1.1,0.7,0.3];
 birdhousePos2 = birdhousePos1 + birdHousePrintingOffset;
 birdhouseDest2 = birdhouseDest1 + birdHousePrintingOffset;
 
+
 birdhousePart1 = PlaceObject("birdhouse.ply", birdhousePos1);
 birdhousePart2 = PlaceObject("birdhouse.ply", birdhousePos2);
 
@@ -19,8 +20,8 @@ vertsBhouse1 = get(birdhousePart1,'Vertices');
 set(birdhousePart1, 'Vertices',vertsBhouse1(:,1:3));
 
 
-vertsBhouse1 = get(birdhousePart2,'Vertices');
-set(birdhousePart2, 'Vertices',vertsBhouse1(:,1:3));
+vertsBhouse2 = get(birdhousePart2,'Vertices');
+set(birdhousePart2, 'Vertices',vertsBhouse2(:,1:3));
 
 hold on
 
@@ -29,13 +30,8 @@ currentPos = currentPo.';
 
 trajM = [currentPos; birdhousePos1; birdhouseDest1; birdhousePos2; birdhouseDest2];
 
-%birdHouseVerts = PlaceObject('birdhouse.ply'); %Obtaining .ply file verticies
-
-
-%set(vertsBhouse1,'Vertices',vertsBhouse1);
 axis equal
 
-%trajM = [trajM; zeros(1, 3)];
 
 for m = 2:height(trajM)
                 
@@ -43,6 +39,7 @@ for m = 2:height(trajM)
     q2 = robot.model.ikcon(transl(trajM(m,:)));
     steps = 50;
     qMatrix = jtraj(q1,q2,steps);
+    partCount = 0;
         
     for n = 1:steps
 
@@ -52,18 +49,23 @@ for m = 2:height(trajM)
         disp("Moving")
 
         if rem(m, 2) ~= 0
-            disp('even');
+            
             % robot.model.animate(qMatrix(n, :));
+            partCount = partCount + 1;
             currentTransformationMatrix = robot.model.fkine(qMatrix(n,:));
+            currentEndEff = robot.model.fkine(robot.model.getpos).t;
 
-
-            %pickedUpPart = PlaceObject('birdhouse.ply', robot.model.fkine(robot.model.getpos).t); %if needing to pick up different names parts, use counting system "birdhouse" +num2string(n) + '.ply'
-            
-            %pickedUpPartVerts = get(pickedUpPart, 'Vertices');
-            
+            % PlaceObject('birdhouse.ply', currentEndEff); %if needing to pick up different names parts, use counting system "birdhouse" +num2string(n) + '.ply'
+            pause(0.01);
+            %birdhousePart1 = get(pickedUpPart, 'Vertices');
+            %vertsBhouse1 = get(pickedUpPart,'Vertices');
+            % vertsBhouse1 = get(birdhousePart1,'Vertices');
+            % set(birdhousePart1, 'Vertices',vertsBhouse1(:,1:3));
+           
             transformedVertices = [vertsBhouse1,ones(size(vertsBhouse,1),1)]*currentTransformationMatrix.T';
+            %transformedVertices = currentTransformationMatrix.T';
             set(birdhousePart1,'Vertices',transformedVertices(:,1:3));
-            % pause(0.01)    
+            pause(0.01)    
         end
 
     end
