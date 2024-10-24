@@ -19,15 +19,15 @@ birdhousePart2 = PlaceObject("birdhouse.ply", birdhousePos2);
 vertsBhouse1 = get(birdhousePart1,'Vertices');
 set(birdhousePart1, 'Vertices',vertsBhouse1(:,1:3));
 
-
 vertsBhouse2 = get(birdhousePart2,'Vertices');
 set(birdhousePart2, 'Vertices',vertsBhouse2(:,1:3));
 
+vertsBhouse1 = vertsBhouse1 - birdhousePos1;
+vertsBhouse2 = vertsBhouse2- birdhousePos2;
+
 hold on
 
-currentPo = robot.model.fkine(robot.model.getpos).t;
-currentPos = currentPo.';
-
+currentPos = robot.model.fkine(robot.model.getpos).t.';
 trajM = [currentPos; birdhousePos1; birdhouseDest1; birdhousePos2; birdhouseDest2];
 
 axis equal
@@ -39,8 +39,7 @@ for m = 2:height(trajM)
     q2 = robot.model.ikcon(transl(trajM(m,:)));
     steps = 50;
     qMatrix = jtraj(q1,q2,steps);
-    partCount = 0;
-        
+
     for n = 1:steps
 
         robot.model.animate(qMatrix(n, :));
@@ -50,17 +49,11 @@ for m = 2:height(trajM)
 
         if rem(m, 2) ~= 0
             
-            % robot.model.animate(qMatrix(n, :));
-            partCount = partCount + 1;
             currentTransformationMatrix = robot.model.fkine(qMatrix(n,:));
             currentEndEff = robot.model.fkine(robot.model.getpos).t;
 
-            % PlaceObject('birdhouse.ply', currentEndEff); %if needing to pick up different names parts, use counting system "birdhouse" +num2string(n) + '.ply'
+           %if needing to pick up different names parts, use counting system "birdhouse" +num2string(n) + '.ply'
             pause(0.01);
-            %birdhousePart1 = get(pickedUpPart, 'Vertices');
-            %vertsBhouse1 = get(pickedUpPart,'Vertices');
-            % vertsBhouse1 = get(birdhousePart1,'Vertices');
-            % set(birdhousePart1, 'Vertices',vertsBhouse1(:,1:3));
            
             transformedVertices = [vertsBhouse1,ones(size(vertsBhouse,1),1)]*currentTransformationMatrix.T';
             %transformedVertices = currentTransformationMatrix.T';
