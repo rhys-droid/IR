@@ -25,6 +25,11 @@ set(birdhousePart2, 'Vertices',vertsBhouse2(:,1:3));
 vertsBhouse1 = vertsBhouse1 - birdhousePos1;
 vertsBhouse2 = vertsBhouse2- birdhousePos2;
 
+vertiesMatrix = {vertsBhouse1;vertsBhouse2};
+birdPartMatrix = {birdhousePart1;birdhousePart2};
+
+partIndex = 1;
+
 hold on
 
 currentPos = robot.model.fkine(robot.model.getpos).t.';
@@ -45,27 +50,34 @@ for m = 2:height(trajM)
         robot.model.animate(qMatrix(n, :));
         axis equal
         pause(0.01)
-        disp("Moving")
 
         if rem(m, 2) ~= 0
             
             currentTransformationMatrix = robot.model.fkine(qMatrix(n,:));
-            currentEndEff = robot.model.fkine(robot.model.getpos).t;
+            %currentEndEff = robot.model.fkine(robot.model.getpos).t;
 
            %if needing to pick up different names parts, use counting system "birdhouse" +num2string(n) + '.ply'
             pause(0.01);
            
-            transformedVertices = [vertsBhouse1,ones(size(vertsBhouse,1),1)]*currentTransformationMatrix.T';
-            %transformedVertices = currentTransformationMatrix.T';
-            set(birdhousePart1,'Vertices',transformedVertices(:,1:3));
-            pause(0.01)    
-        end
+            % transformedVertices = [vertsBhouse1,ones(size(vertsBhouse,1),1)]*currentTransformationMatrix.T';
+            % %transformedVertices = currentTransformationMatrix.T';
+            % set(birdhousePart1,'Vertices',transformedVertices(:,1:3));
+            % pause(0.01)
+            i = size(birdPartMatrix);
+            transformedVertices = [vertiesMatrix{partIndex},ones(size(vertiesMatrix{partIndex},1),1)]*currentTransformationMatrix.T';
+            set(birdPartMatrix{partIndex},'Vertices',transformedVertices(:,1:3));
+            pause(0.01)
+            %partIndex = partIndex +1
+            currentEndEff = robot.model.fkine(robot.model.getpos).t;
+
+            if currentEndEff == trajM(m,:)
+                partIndex = partIndex +1
+            end
+
+        end        
 
     end
 
-     
-     pause(0.01);
-     %disp("Moved")
 
 end
 
