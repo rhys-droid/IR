@@ -22,13 +22,19 @@ function self =TreeBot(baseTr)
 
             self.PlotAndColourRobot();  
     
-        end
+end
+
+%% Update joint values
+    function UpdateRobot(self, q)
+        self.model.plot(q);  % Update the robot with the new joint angles
+    end
+
 
 %% CreateModel
         function CreateModel(self) 
 
             L1 = Link('d',0.3,'a',0,'alpha',-pi/2,'qlim',[-2*pi 2*pi]);
-            L2 = Link('d', 0, 'a', 0.4, 'alpha', 0, 'qlim', [-pi/2, pi]);
+            L2 = Link('d', 0, 'a', 0.4, 'alpha', 0, 'qlim', [-pi, pi]);
             L3 = Link('d', 0, 'a', 0.4, 'alpha', 0, 'qlim', [-pi/2, pi]);
             L4 = Link('d', 0, 'a', 0, 'alpha', pi/2, 'qlim', [-pi/4, 5*pi/4]);
             L5 = Link('d', 0.2, 'a', 0, 'alpha', -pi/2, 'qlim', [-pi, pi]);
@@ -38,7 +44,18 @@ function self =TreeBot(baseTr)
             
             self.model = SerialLink([L1, L2, L3, L4, L5, L6, L7], 'name',self.name);
 
-        end   
+        end  
+
+           function AnimateRobot(self, q)
+                % Check if the model exists and is plotted
+                if isempty(self.model.base) || ~isvalid(self.model)
+                    % If not, plot the robot for the first time
+                    self.PlotAndColourRobot();
+                else
+                    % Use animate to smoothly update the robot's pose
+                    self.model.animate(q);
+                end
+    end
     end
 
     methods(Static)
