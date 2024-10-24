@@ -20,7 +20,7 @@ classdef treeBotCollisionCheck < handle
 
             robot = TreeBot;
             robot.PlotAndColourRobot();
-            birdOnBranchPos = [1.8,0.5,0.4; 0,0,0];
+            birdOnBranchPos = [1.8,0.5,0.4; 0,0,0]
             birdOnBranchPoints = cloudPoints.loadPointClouds('birdOnBranch.ply', birdOnBranchPos(1,:));
             initalTreeBotPos = [0.5,0.5, 0.2];
             initalTreeBotDest = [1,0.3,0];
@@ -53,14 +53,20 @@ classdef treeBotCollisionCheck < handle
 
                 if self.CheckCollision(robot.model, birdOnBranchPoints)
                                             
-                   currentPos = robot.model.fkine(robot.model.getpos).t; %Updating matrix to continue from current position to desried destination
+                   currentPos = robot.model.fkine(robot.model.getpos).t; %Updating matrix to continue to 
                     q1 = robot.model.ikcon(transl(currentPos));
                     q2 = robot.model.ikcon(transl(initalTreeBotDest));
                     qMatrix = jtraj(q1,q2,steps);
                     n = 1;                   
+
+
                end
 
                pause(0.01);
+
+
+               axis equal
+               
 
                if self.emergencyStopPressed
                    disp("Emergency stop button pressed!! Stopping Robot.");
