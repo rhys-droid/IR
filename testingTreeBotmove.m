@@ -3,7 +3,6 @@ robot = TreeBot;
 robot.PlotAndColourRobot();
 hold on
 
-
 birdHousePrintingOffset = [0,0.2,0];
 
 birdhousePos1 = [1,0.5,0];
@@ -11,7 +10,6 @@ birdhouseDest1 = [1.1,0.7,0.3];
 
 birdhousePos2 = birdhousePos1 + birdHousePrintingOffset;
 birdhouseDest2 = birdhouseDest1 + birdHousePrintingOffset;
-
 
 birdhousePart1 = PlaceObject("birdhouse.ply", birdhousePos1);
 birdhousePart2 = PlaceObject("birdhouse.ply", birdhousePos2);
@@ -53,37 +51,18 @@ for m = 2:height(trajM)
         pause(0.01)
 
         if rem(m, 2) ~= 0
-            
-            currentTransformationMatrix = robot.model.fkine(qMatrix(n,:));
-            %currentEndEff = robot.model.fkine(robot.model.getpos).t;
 
-           %if needing to pick up different names parts, use counting system "birdhouse" +num2string(n) + '.ply'
-            pause(0.01);
-           
-            % transformedVertices = [vertsBhouse1,ones(size(vertsBhouse,1),1)]*currentTransformationMatrix.T';
-            % %transformedVertices = currentTransformationMatrix.T';
-            % set(birdhousePart1,'Vertices',transformedVertices(:,1:3));
-            % pause(0.01)
-            i = size(birdPartMatrix);
+            currentTransformationMatrix = robot.model.fkine(qMatrix(n,:));
             transformedVertices = [vertiesMatrix{partIndex},ones(size(vertiesMatrix{partIndex},1),1)]*currentTransformationMatrix.T';
             set(birdPartMatrix{partIndex},'Vertices',transformedVertices(:,1:3));
-            pause(0.01)
-            %partIndex = partIndex +1
-            currentEndEff = robot.model.fkine(robot.model.getpos).t;
             partIndexIncrease = true;
-            partIndex
-
 
         end   
 
-
-
     end
 
-    
-
     if partIndexIncrease
-        partIndex = partIndex +1
+        partIndex = partIndex +1;
         partIndexIncrease = false;
      end
 
