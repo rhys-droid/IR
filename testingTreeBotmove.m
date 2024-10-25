@@ -29,6 +29,7 @@ vertiesMatrix = {vertsBhouse1;vertsBhouse2};
 birdPartMatrix = {birdhousePart1;birdhousePart2};
 
 partIndex = 1;
+partIndexIncrease = false;
 
 hold on
 
@@ -69,14 +70,22 @@ for m = 2:height(trajM)
             pause(0.01)
             %partIndex = partIndex +1
             currentEndEff = robot.model.fkine(robot.model.getpos).t;
+            partIndexIncrease = true;
+            partIndex
 
-            if currentEndEff == trajM(m,:)
-                partIndex = partIndex +1
-            end
 
-        end        
+        end   
+
+
 
     end
+
+    
+
+    if partIndexIncrease
+        partIndex = partIndex +1
+        partIndexIncrease = false;
+     end
 
 
 end

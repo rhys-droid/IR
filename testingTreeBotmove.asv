@@ -29,6 +29,7 @@ vertiesMatrix = {vertsBhouse1;vertsBhouse2};
 birdPartMatrix = {birdhousePart1;birdhousePart2};
 
 partIndex = 1;
+partIndexIncrease = fasle;
 
 hold on
 
@@ -50,7 +51,6 @@ for m = 2:height(trajM)
         robot.model.animate(qMatrix(n, :));
         axis equal
         pause(0.01)
-        disp("Moving")
 
         if rem(m, 2) ~= 0
             
@@ -70,15 +70,15 @@ for m = 2:height(trajM)
             pause(0.01)
             %partIndex = partIndex +1
             currentEndEff = robot.model.fkine(robot.model.getpos).t;
-            
-            if q2 == currentEndEff
-                partIndex = partIndex +1
+
+            if partIndexIncrease
+                partIndex = partIndex +1;
             end
-        end
-        
+
+        end        
 
     end
-    partIndex = partIndex +1;
+
 
 end
 
