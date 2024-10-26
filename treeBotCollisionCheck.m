@@ -2,7 +2,6 @@ classdef treeBotCollisionCheck < handle
 
     properties
         emergencyStopPressed = false;  % Class property
-        initalMove = false;
     end
 
     methods
@@ -24,24 +23,20 @@ classdef treeBotCollisionCheck < handle
             birdOnBranchPoints = cloudPoints.loadPointClouds('birdOnBranch.ply', birdOnBranchPos(1,:));
             initalTreeBotPos = [0.5,0.5, 0.2];
             initalTreeBotDest = [1,0.3,0];
-            
-            %% Move Robot
 
-            if ~self.initalMove
-    
-                 q1 = robot.model.ikcon(transl(initalTreeBotPos));
-                 q2 = robot.model.ikcon(transl(initalTreeBotDest));
-    
+            %% Initalise trajectory
+            for n = 1 
+                q1 = robot.model.ikcon(transl(initalTreeBotPos));
+                q2 = robot.model.ikcon(transl(initalTreeBotDest));
                 steps = 100;
-    
                 qMatrix = jtraj(q1,q2,steps); % Obtaing the joint space trajectory
-
-                self.initalMove = true;
+                n = n+1;
             end
 
             self.detectES();
             
             n = 1;
+
             while n<=steps              
 
                 if ~self.CheckCollision(robot.model, birdOnBranchPoints)
@@ -121,6 +116,7 @@ classdef treeBotCollisionCheck < handle
             
             if strcmp(event.Key, 'space')  % Checking if the pressed key is the space bar
                 self.emergencyStopPressed = true;
+
             end
         end
     end

@@ -14,7 +14,6 @@ classdef cloudPoints < handle
             
             clf;  
 
-
             self.loadPointClouds(plyFile, positionxyz);
         end
     end
