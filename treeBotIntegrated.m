@@ -60,7 +60,7 @@ classdef treeBotIntegrated < handle
             currentPos = robot.model.fkine(robot.model.getpos).t.';
             initialTreeBotPos = currentPos;
 
-            m=1;
+            partIndexCounter=1;
 
             self.detectES();
         
@@ -71,16 +71,9 @@ classdef treeBotIntegrated < handle
                 q2 = robot.model.ikcon(transl(initalTreeBotDest));
                 steps = 100;
                 qMatrix = jtraj(q1, q2, steps); % Obtaining the joint space trajectory
-                        
-                
-        
+
                 n = 1;
                 while n <= steps
-                    % if ~self.CheckCollision(robot.model, birdOnBranchPoints)
-                    %     robot.model.animate(qMatrix(n, :));
-                    %     n = n + 1;
-                    %     pause(0.01);
-                    % end
 
                     if self.CheckCollision(robot.model, birdOnBranchPoints) % Detecting if there is a collision
                         
@@ -96,22 +89,12 @@ classdef treeBotIntegrated < handle
                         pause(0.01);
                     end
 
-                    if rem(m, 2) == 0
-
-                        % i = self.partIndex
-                        m
-                        k = m/2
-                        self.updatePartMovement(robot.model, qMatrix(n,:),vertiesMatrix{m/2},birdPartMatrix{m/2});
+                    if rem(partIndexCounter, 2) == 0
+          
+                        self.updatePartMovement(robot.model, qMatrix(n,:),vertiesMatrix{partIndexCounter/2},birdPartMatrix{partIndexCounter/2});
                         n = n + 1;
             
                     end  
-
-                    % if self.partIndexIncrease
-                    % 
-                    %     self.partIndex = self.partIndex +1;
-                    %     self.partIndexIncrease = false;
-                    % 
-                    % end
         
                     if self.emergencyStopPressed
                         disp("Emergency stop button pressed!! Stopping Robot.");
@@ -122,7 +105,7 @@ classdef treeBotIntegrated < handle
                 
                 
                 initialTreeBotPos = initalTreeBotDest; % Updating position
-                m=m+1;
+                partIndexCounter=partIndexCounter+1;
             end
         end
 
@@ -158,7 +141,6 @@ classdef treeBotIntegrated < handle
 
 
             if ~withinLimits
-                
                 crash = false;
             end
                     
@@ -184,7 +166,7 @@ classdef treeBotIntegrated < handle
             currentTransformationMatrix = robot.fkine(qValues);
             transformedVertices = [verticies,ones(size(verticies,1),1)]*currentTransformationMatrix.T';
             set(birdMatrix,'Vertices',transformedVertices(:,1:3));
-            % self.partIndexIncrease = true;
+
 
         end
     end
