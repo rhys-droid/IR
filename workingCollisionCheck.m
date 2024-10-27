@@ -1,83 +1,62 @@
-classdef integrated < handle
+classdef workingCollisionCheck < handle
 
     properties
         emergencyStopPressed = false;  % Class property
-        partIndex = 1;
-        partIndexIncrease = false;
     end
 
     methods
-        function self = integrated()
+        function self = workingCollisionCheck()
             clf	
-            self.main();
+            self.runRobot();
             
         end
     end
 
     methods 
 
-        function main(self)
+        function runRobot(self)
             clf
-
+            % 
             robot = TreeBot;
             robot.PlotAndColourRobot();
-            birdOnBranchPos = [1.8,0.8,0.4; 0,0,0];
+            % birdOnBranchPos = [1.8,0.5,0.4; 0,0,0];
+            % birdOnBranchPoints = cloudPoints.loadPointClouds('birdOnBranch.ply', birdOnBranchPos(1,:));
+            % initalTreeBotPos = [0.5,0.5, 0.2];
+            % initalTreeBotDest = [1,0.3,0];
+
+            birdOnBranchPos= [1,0.8,0.1;0,0,0];
+
             birdOnBranchPoints = cloudPoints.loadPointClouds('birdOnBranch.ply', birdOnBranchPos(1,:));
-            initalTreeBotPos = [0.5,0.5, 0.2];
-            initalTreeBotDest = [1,0.3,0];
 
             birdHousePrintingOffset = [0,0.2,0];
-            
+                        
             birdhousePos1 = [1,0.5,0];
             birdhouseDest1 = [1.1,0.7,0.3];
-            
+                        
             birdhousePos2 = birdhousePos1 + birdHousePrintingOffset;
             birdhouseDest2 = birdhouseDest1 + birdHousePrintingOffset;
             
-            birdhousePart1 = PlaceObject("birdhouse.ply", birdhousePos1);
-            birdhousePart2 = PlaceObject("birdhouse.ply", birdhousePos2);
-            
-            vertsBhouse1 = get(birdhousePart1,'Vertices');
-            set(birdhousePart1, 'Vertices',vertsBhouse1(:,1:3));
-            
-            vertsBhouse2 = get(birdhousePart2,'Vertices');
-            set(birdhousePart2, 'Vertices',vertsBhouse2(:,1:3));
-            
-            vertsBhouse1 = vertsBhouse1 - birdhousePos1;
-            vertsBhouse2 = vertsBhouse2- birdhousePos2;
-            
-            vertiesMatrix = {vertsBhouse1;vertsBhouse2};
-            birdPartMatrix = {birdhousePart1;birdhousePart2};
+            currentPos = robot.model.fkine(robot.model.getpos).t.';
+            trajM = [currentPos;birdhousePos1; birdhouseDest1; birdhousePos2; birdhouseDest2];
+            self.detectES();
 
             %% Initalise trajectory
-            % for n = 1 
-            %     q1 = robot.model.ikcon(transl(initalTreeBotPos));
-            %     q2 = robot.model.ikcon(transl(initalTreeBotDest));
-            %     steps = 100;
-            %     qMatrix = jtraj(q1,q2,steps); % Obtaing the joint space trajectory
-            %     n = n+1;
-            % end
+            for j = 2:height(trajM)
 
-            currentPos = robot.model.fkine(robot.model.getpos).t.';
-            trajM = [currentPos; birdhousePos1; birdhouseDest1; birdhousePos2; birdhouseDest2];
-            axis equal
-            
-            
-            for m = 2:height(trajM)
-                            
-                q1 = robot.model.ikcon(transl(trajM(m-1,:)));
-                q2 = robot.model.ikcon(transl(trajM(m,:)));
-                steps = 50;
-                qMatrix = jtraj(q1,q2,steps);
-
-            
-
-            self.detectES();
-            
-            n = 1;
-
-            while n<=steps              
-
+                for n = 1 
+                    q1 = robot.model.ikcon(transl(trajM(j-1,:)));
+                    q2 = robot.model.ikcon(transl(trajM(j,:)));
+                    steps = 100;
+                    qMatrix = jtraj(q1,q2,steps); % Obtaing the joint space trajectory
+                    n = n+1;
+                end
+    
+                
+                
+                n = 1;
+    
+                while n<=steps              
+    
                     if ~self.CheckCollision(robot.model, birdOnBranchPoints)
                         robot.model.animate(qMatrix(n, :));
                         n=n+1;
@@ -85,18 +64,11 @@ classdef integrated < handle
     
                     end
     
-                     if rem(m, 2) ~= 0
-    
-                            i = self.partIndex;
-                            self.updatePartMovement(robot.model, qMatrix(n,:),vertiesMatrix{i},birdPartMatrix{i});
-                
-                    end  
-    
                     if self.CheckCollision(robot.model, birdOnBranchPoints)
                                                 
                        currentPos = robot.model.fkine(robot.model.getpos).t; %Updating matrix to continue from current position to desried destination
                         q1 = robot.model.ikcon(transl(currentPos));
-                        q2 = robot.model.ikcon(transl(initalTreeBotDest));
+                        q2 = robot.model.ikcon(transl((trajM(j-1,:))));
                         qMatrix = jtraj(q1,q2,steps);
                         n = 1;                   
                    end
@@ -109,17 +81,10 @@ classdef integrated < handle
                    end
                    pause(0.1) 
     
-                
-    
-                 if self.partIndexIncrease
-                    
-                    self.partIndex = self.partIndex +1;
-                    self.partIndexIncrease = false;
-                    
-                 end
+                end
             end
-         end
-            
+        
+                
         end
 
         function crash = CheckCollision(~,robot, xyzLimits)
@@ -159,14 +124,6 @@ classdef integrated < handle
                     
         end
 
-        function updatePartMovement(self, robot, qValues, verticies, birdMatrix)
-            currentTransformationMatrix = robot.fkine(qValues);
-            transformedVertices = [verticies,ones(size(verticies,1),1)]*currentTransformationMatrix.T';
-            set(birdMatrix,'Vertices',transformedVertices(:,1:3));
-            self.partIndexIncrease = true;
-
-        end
-
         
         function detectES(self)
 
@@ -184,6 +141,3 @@ classdef integrated < handle
         end
     end
 end
-
-
-
