@@ -1,5 +1,5 @@
 
-birdOnBranchPosition = [1.1,1.3,0.1;0,0,0];
+birdOnBranchPosition = [1,1,0.1;0,0,0];
 
 % birdHousePrintingOffset = [0,0.2,0];
 % 

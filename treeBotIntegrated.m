@@ -95,19 +95,23 @@ classdef treeBotIntegrated < handle
                         n = n + 1;
                         pause(0.01);
                     end
+
                     if rem(m, 2) == 0
 
-                        i = self.partIndex;
-                        self.updatePartMovement(robot.model, qMatrix(n,:),vertiesMatrix{i},birdPartMatrix{i});
+                        % i = self.partIndex
+                        m
+                        k = m/2
+                        self.updatePartMovement(robot.model, qMatrix(n,:),vertiesMatrix{m/2},birdPartMatrix{m/2});
+                        n = n + 1;
             
                     end  
 
-                    if self.partIndexIncrease
-                
-                        self.partIndex = self.partIndex +1;
-                        self.partIndexIncrease = false;
-                
-                    end
+                    % if self.partIndexIncrease
+                    % 
+                    %     self.partIndex = self.partIndex +1;
+                    %     self.partIndexIncrease = false;
+                    % 
+                    % end
         
                     if self.emergencyStopPressed
                         disp("Emergency stop button pressed!! Stopping Robot.");
@@ -180,7 +184,7 @@ classdef treeBotIntegrated < handle
             currentTransformationMatrix = robot.fkine(qValues);
             transformedVertices = [verticies,ones(size(verticies,1),1)]*currentTransformationMatrix.T';
             set(birdMatrix,'Vertices',transformedVertices(:,1:3));
-            self.partIndexIncrease = true;
+            % self.partIndexIncrease = true;
 
         end
     end
