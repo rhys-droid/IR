@@ -1,41 +1,36 @@
-classdef trying < handle
+classdef treeBotIntegrated < handle
 
     properties
         emergencyStopPressed = false;
     end
 
-    methods
-        function self = trying()
+    methods 
+        function self = treeBotIntegrated(trajM, birdOnBranchPos,vertiesMatrix,birdPartMatrix)
             clf	
-            self.runRobot();
+
+            if nargin < 1 % Set default values if arguments are not provided
+                error("Must initalise class object with desired variables")
+            end
+            if nargin < 2
+                error("Must initalise class object with desired variables")  
+            end
+            self.runRobot(trajM, birdOnBranchPos, vertiesMatrix,birdPartMatrix);
             
         end
     end
 
     methods
 
-        function runRobot(self, trajM, birdOnBranchPosition)
+        function runRobot(self, trajM, birdOnBranchPos, vertiesMatrix,birdPartMatrix)
             clf
         
             robot = TreeBot;
             robot.PlotAndColourRobot();
 
-            initialTreeBotPos = [0.5, 0.5, 0.2];
-
-            %birdOnBranchPos= [1.4, 0.9, 0.4; 0, 0, 0];
-
             birdOnBranchPoints = cloudPoints.loadPointClouds('birdOnBranch.ply', birdOnBranchPos(1,:));
-
-            birdHousePrintingOffset = [0,0.2,0];
-                        
-            birdhousePos1 = [1,0.5,0];
-            birdhouseDest1 = [1.1,0.7,0.3];
-                        
-            birdhousePos2 = birdhousePos1 + birdHousePrintingOffset;
-            birdhouseDest2 = birdhouseDest1 + birdHousePrintingOffset;
             
             currentPos = robot.model.fkine(robot.model.getpos).t.';
-            trajM = [currentPos;birdhousePos1; birdhouseDest1; birdhousePos2; birdhouseDest2];
+            initialTreeBotPos = currentPos;
 
             self.detectES();
         
@@ -118,6 +113,13 @@ classdef trying < handle
                 
                 crash = false;
             end
+
+            if rem(m, 2) ~= 0
+
+               i = self.partIndex;
+               self.updatePartMovement(robot.model, qMatrix(n,:),vertiesMatrix{i},birdPartMatrix{i});
+            
+            end  
                     
         end
 
@@ -135,6 +137,14 @@ classdef trying < handle
                 self.emergencyStopPressed = true;
 
             end
+        end
+
+        function updatePartMovement(self, robot, qValues, verticies, birdMatrix)
+            currentTransformationMatrix = robot.fkine(qValues);
+            transformedVertices = [verticies,ones(size(verticies,1),1)]*currentTransformationMatrix.T';
+            set(birdMatrix,'Vertices',transformedVertices(:,1:3));
+            self.partIndexIncrease = true;
+
         end
     end
 end
