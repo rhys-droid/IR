@@ -45,7 +45,7 @@ classdef World < handle
             % rotates, then plots the image for the other wall
             twoImg = imread('SideTwo.jpg');
             twoRot = rot90(twoImg, -1);
-            surf([-2.5,-2.5;-2.5,-2.5], [-2.5,-2.5;2.5,2.5], [0.01,2;0.01,2], 'CData',twoRot, 'FaceColor','texturemap');
+            surf([2.5,2.5;2.5,2.5], [2.5,2.5;-2.5,-2.5], [0.01,2;0.01,2], 'CData',twoRot, 'FaceColor','texturemap');
             hold on;
 
             % bird on branch
