@@ -7,6 +7,7 @@ classdef GUIintegration < handle
         direction = 'x';
         currentPos = [];
         newPos = [];
+        EstopPressed = false;
     end
 
     methods
@@ -55,12 +56,43 @@ classdef GUIintegration < handle
             self.app.ZButton_2.ButtonPushedFcn = @(~, ~) self.moveEndEffector('-z');
 
             self.app.JogamountmEditField.ValueChangedFcn = @(src, event) self.updateJog(event.Value);
+
+            self.app.Button.ButtonPushedFcn = @(src, event) self.updateEstop(true);
+
+            self.app.ResumeButton.ButtonPushedFcn = @(src, event) self.updateEstop(false);
+            
+            self.app.BirdhouseButton.ButtonPushedFcn = @(src, event) self.runProgram('Birdhouse');
+
+            self.app.BeehiveButton.ButtonPushedFcn = @(src, event) self.runProgram('Beehive');
+
+            
         end
+
+
+
+
+
+        function runProgram(self, product)
+            if strcmp(product, 'Birdhouse')
+                disp('YIPPEEEE');
+            end
+            if strcmp(product, 'Beehive')
+                disp('RAAAHHHHH');
+            end
+        end
+
 
 
         function updateJog(self, inputVal)
             self.stepSize = inputVal;
         end
+
+        function updateEstop(self, pressState)
+            disp(self.EstopPressed);
+            self.EstopPressed = pressState; 
+            disp(self.EstopPressed);
+        end
+
 
 
         % Update the corresponding joint angle when the slider is moved
@@ -110,13 +142,6 @@ classdef GUIintegration < handle
                     newJoints = self.robot.model.ikcon(self.newPos);
                     moveNewPos = jtraj(currentJoints, newJoints, 30);
 
-                    for step = 1:size(moveNewPos, 1)
-                        self.robot.model.animate(moveNewPos(step,:));
-                        drawnow();
-                        pause(0.05);
-
-                    end
-
 
 
                 case '-x'
@@ -129,12 +154,6 @@ classdef GUIintegration < handle
                     newJoints = self.robot.model.ikcon(self.newPos);
                     moveNewPos = jtraj(currentJoints, newJoints, 30);
 
-                    for step = 1:size(moveNewPos, 1)
-                        self.robot.model.animate(moveNewPos(step,:));
-                        drawnow();
-                        pause(0.05);
-
-                    end
 
                 case 'y'
 
@@ -145,12 +164,6 @@ classdef GUIintegration < handle
                     newJoints = self.robot.model.ikcon(self.newPos);
                     moveNewPos = jtraj(currentJoints, newJoints, 30);
 
-                    for step = 1:size(moveNewPos, 1)
-                        self.robot.model.animate(moveNewPos(step,:));
-                        drawnow();
-                        pause(0.05);
-
-                    end
 
 
                 case '-y'
@@ -162,14 +175,6 @@ classdef GUIintegration < handle
                     newJoints = self.robot.model.ikcon(self.newPos);
                     moveNewPos = jtraj(currentJoints, newJoints, 30);
 
-                    for step = 1:size(moveNewPos, 1)
-                        self.robot.model.animate(moveNewPos(step,:));
-                        drawnow();
-                        pause(0.05);
-
-                    end
-
-
 
                 case 'z'
                     self.newPos = self.currentPos.T;
@@ -178,14 +183,6 @@ classdef GUIintegration < handle
                     self.newPos(3, 4) = self.newPos(3, 4) + self.stepSize;
                     newJoints = self.robot.model.ikcon(self.newPos);
                     moveNewPos = jtraj(currentJoints, newJoints, 30);
-
-                    for step = 1:size(moveNewPos, 1)
-                        self.robot.model.animate(moveNewPos(step,:));
-                        drawnow();
-                        pause(0.05);
-
-                    end
-
 
 
 
@@ -198,20 +195,22 @@ classdef GUIintegration < handle
                     newJoints = self.robot.model.ikcon(self.newPos);
                     moveNewPos = jtraj(currentJoints, newJoints, 30);
 
-                    for step = 1:size(moveNewPos, 1)
-                        self.robot.model.animate(moveNewPos(step,:));
-                        drawnow();
-                        pause(0.05);
+            end
+            for step = 1:size(moveNewPos, 1)
 
-                    end
-
-
+                   self.robot.model.animate(moveNewPos(step,:));
+                   drawnow();
+                   pause(0.05);
+                   if self.EstopPressed
+                       disp('E-stop has been pressed!');
+                       return;
+                   end
 
             end
             self.q = newJoints;
-            self.updateSliders();
             self.currentPos = self.newPos;
             currentJoints = newJoints;
+            self.updateSliders();
         end
     end
 end
