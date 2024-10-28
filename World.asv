@@ -1,8 +1,8 @@
 classdef World < handle
     properties
         workspace = [-3 3 -3 3 0 3];
-        robot;
-        robot2;
+        robot_dobot;
+        robot_treebot;
         scale = 0.1;
         qinit = [];
         qinit2 = [];
@@ -16,16 +16,20 @@ classdef World < handle
 
       %% Build the working environment
        function BuildWorld(self)
-            self.robot = LinearDobot;
-            self.robot.model.base = trotx(pi/2) * transl(0, 0.96, 1.6);
-            self.robot.PlotAndColourRobot;
+            self.robot_dobot = LinearDobot;
+            self.robot_dobot.model.base = trotx(pi/2) * transl(0, 1, 1.6);
+            self.qinit = zeros(1, self.robot_dobot.model.n);
             hold on;
-            self.robot2 = TreeBot;
-            self.robot2.model.base = transl(0.15, 0, 1);
-            self.robot2.PlotAndColourRobot();
+            self.robot_treebot = TreeBot;
+            self.robot_treebot.model.base = transl(-0.15, 0, 1);
+            self.qinit2 = zeros(1,self.robot_treebot.model.n);
 
-            self.qinit = zeros(1,self.robot.model.n);
-            self.qinit2 = zeros(1,self.robot2.model.n);
+
+            % self.robot.PlotAndColourRobot();
+            % self.robot2.PlotAndColourRobot();
+           
+
+
 
             hold on
             % applies a surface image to the floor
@@ -41,7 +45,7 @@ classdef World < handle
             % rotates, then plots the image for the other wall
             twoImg = imread('SideTwo.jpg');
             twoRot = rot90(twoImg, -1);
-            surf([-2.5,-2.5;-2.5,-2.5], [-2.5,-2.5;2.5,2.5], [0.01,2;0.01,2], 'CData',twoRot, 'FaceColor','texturemap');
+            surf([2.5,2.5;2.5,2.5], [2.5,2.5;-2.5,-2.5], [0.01,2;0.01,2], 'CData',twoRot, 'FaceColor','texturemap');
             hold on;
 
             % bird on branch
@@ -57,14 +61,15 @@ classdef World < handle
             vertexData = (Rz * vertexData')';
             trisurf(faceData, vertexData(:, 1)-0.37, vertexData(:, 2) + 0.48, vertexData(:, 3));
 
-            % Initialize both robots in their environment
-            self.robot.model.plot(self.qinit,'workspace', self.workspace,'scale',self.scale);
-            self.robot2.model.plot(self.qinit2,'workspace', self.workspace,'scale',self.scale);
        end
 
        % Method to return the LinearDobot robot
        function robot = getRobot(self)
-           robot = self.robot;
+           robot = self.robot_dobot;
        end
+       function robot2 = getRobot2(self)
+           robot2 = self.robot_treebot;
+       end
+
    end
 end
