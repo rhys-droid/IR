@@ -2,12 +2,11 @@ classdef treeBotIntegrated < handle
 
     properties
         emergencyStopPressed = false;
-        partIndex = 1;
-        partIndexIncrease = false;
+
     end
 
     methods 
-        function self = treeBotIntegrated(trajM, birdOnBranchPos,birdhousePos1,birdhouseDest1)
+        function self = treeBotIntegrated(trajM, birdOnBranchPos)
             clf	
 
             if nargin < 1 % Set default values if arguments are not provided
@@ -16,14 +15,14 @@ classdef treeBotIntegrated < handle
             if nargin < 2
                 error("Must initalise class object with desired variables")  
             end
-            self.runRobot(trajM, birdOnBranchPos, birdhousePos1,birdhouseDest1);
+            self.runRobot(trajM, birdOnBranchPos);
             
         end
     end
 
     methods
 
-        function runRobot(self, trajM, birdOnBranchPos, birdhousePos1,birdhouseDest1)
+        function runRobot(self, trajM, birdOnBranchPos)
             clf
         
             robot = TreeBot;
@@ -31,10 +30,13 @@ classdef treeBotIntegrated < handle
             robot.PlotAndColourRobot();
             hold on
 
-            birdHousePrintingOffset = [0,0.2,0];
+            printingOffset = [0.06,0.05,0.03];
 
-            birdhousePos2 = birdhousePos1 + birdHousePrintingOffset;
-            birdhouseDest2 = birdhouseDest1 + birdHousePrintingOffset;
+            birdhousePos1 = trajM(1,:) - printingOffset;
+            birdhousePos2 = trajM(3,:) - printingOffset;
+
+            % birdhousePos2 = birdhousePos1 + birdHousePrintingOffset;
+            % birdhouseDest2 = birdhouseDest1 + birdHousePrintingOffset;
                         
             birdhousePart1 = PlaceObject("birdhouse.ply", birdhousePos1);
             hold on
