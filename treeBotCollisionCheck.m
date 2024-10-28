@@ -2,6 +2,7 @@ classdef treeBotCollisionCheck < handle
 
     properties
         emergencyStopPressed = false;
+
     end
 
     methods 
@@ -25,12 +26,43 @@ classdef treeBotCollisionCheck < handle
             clf
         
             robot = TreeBot;
+            robot.model.base = transl(-0.15, 0, 1);
             robot.PlotAndColourRobot();
+            hold on
+
+            printingOffset = [0.06,0.05,0.06];
+
+            birdhousePos1 = trajM(1,:) - printingOffset;
+            birdhousePos2 = trajM(3,:) - printingOffset;
+
+            % birdhousePos2 = birdhousePos1 + birdHousePrintingOffset;
+            % birdhouseDest2 = birdhouseDest1 + birdHousePrintingOffset;
+                        
+            birdhousePart1 = PlaceObject("birdhouse.ply", birdhousePos1);
+            hold on
+            birdhousePart2 = PlaceObject("birdhouse.ply", birdhousePos2);
+            hold on
+                        
+            vertsBhouse1 = get(birdhousePart1,'Vertices');
+            set(birdhousePart1, 'Vertices',vertsBhouse1(:,1:3));
+            hold on
+                        
+            vertsBhouse2 = get(birdhousePart2,'Vertices');
+            set(birdhousePart2, 'Vertices',vertsBhouse2(:,1:3));
+            hold on
+                        
+            vertsBhouse1 = vertsBhouse1 - birdhousePos1;
+            vertsBhouse2 = vertsBhouse2- birdhousePos2;
+            
+            vertiesMatrix = {vertsBhouse1;vertsBhouse2};
+            birdPartMatrix = {birdhousePart1;birdhousePart2};
 
             birdOnBranchPoints = cloudPoints.loadPointClouds('birdOnBranch.ply', birdOnBranchPos(1,:));
             
             currentPos = robot.model.fkine(robot.model.getpos).t.';
             initialTreeBotPos = currentPos;
+
+            partIndexCounter=1;
 
             self.detectES();
         
@@ -41,16 +73,9 @@ classdef treeBotCollisionCheck < handle
                 q2 = robot.model.ikcon(transl(initalTreeBotDest));
                 steps = 100;
                 qMatrix = jtraj(q1, q2, steps); % Obtaining the joint space trajectory
-        
-                
-        
+
                 n = 1;
                 while n <= steps
-                    % if ~self.CheckCollision(robot.model, birdOnBranchPoints)
-                    %     robot.model.animate(qMatrix(n, :));
-                    %     n = n + 1;
-                    %     pause(0.01);
-                    % end
 
                     if self.CheckCollision(robot.model, birdOnBranchPoints) % Detecting if there is a collision
                         
@@ -65,6 +90,13 @@ classdef treeBotCollisionCheck < handle
                         n = n + 1;
                         pause(0.01);
                     end
+
+                    if rem(partIndexCounter, 2) == 0
+          
+                        self.updatePartMovement(robot.model, qMatrix(n,:),vertiesMatrix{partIndexCounter/2},birdPartMatrix{partIndexCounter/2});
+                        n = n + 1;
+            
+                    end  
         
                     if self.emergencyStopPressed
                         disp("Emergency stop button pressed!! Stopping Robot.");
@@ -75,6 +107,7 @@ classdef treeBotCollisionCheck < handle
                 
                 
                 initialTreeBotPos = initalTreeBotDest; % Updating position
+                partIndexCounter=partIndexCounter+1;
             end
         end
 
@@ -110,7 +143,6 @@ classdef treeBotCollisionCheck < handle
 
 
             if ~withinLimits
-                
                 crash = false;
             end
                     
@@ -130,6 +162,14 @@ classdef treeBotCollisionCheck < handle
                 self.emergencyStopPressed = true;
 
             end
+        end
+
+        function updatePartMovement(self, robot, qValues, verticies, birdMatrix)
+            currentTransformationMatrix = robot.fkine(qValues);
+            transformedVertices = [verticies,ones(size(verticies,1),1)]*currentTransformationMatrix.T';
+            set(birdMatrix,'Vertices',transformedVertices(:,1:3));
+
+
         end
     end
 end

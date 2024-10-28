@@ -13,7 +13,7 @@ birdhousePos2 = [-0.1, 0.7, 0.1];
 birdhouseDest2 = [1, 0.6, 0];
 
 trajM = [birdhousePos1; birdhouseDest1; birdhousePos2; birdhouseDest2];
-collisionChecker = treeBotIntegrated(trajM, birdOnBranchPosition);
+collisionChecker = treeBotCollisionCheck(trajM, birdOnBranchPosition);
 hold on
 
 collisionChecker.runRobot()

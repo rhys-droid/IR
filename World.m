@@ -48,11 +48,11 @@ classdef World < handle
             surf([2.5,2.5;2.5,2.5], [2.5,2.5;-2.5,-2.5], [0.01,2;0.01,2], 'CData',twoRot, 'FaceColor','texturemap');
             hold on;
 
-            % bird on branch
-            [faceData, vertexData, ~] = plyread("birdOnBranch.ply");
-            Rz = [-1 0 0; 0 -1 0; 0 0 1];
-            vertexData = (Rz * vertexData')';
-            trisurf(faceData, vertexData(:, 1) - 2, vertexData(:, 2) + 1, vertexData(:, 3) + 1.5, 'FaceColor', 'none');
+            % % bird on branch
+            % [faceData, vertexData, ~] = plyread("birdOnBranch.ply");
+            % Rz = [-1 0 0; 0 -1 0; 0 0 1];
+            % vertexData = (Rz * vertexData')';
+            % trisurf(faceData, vertexData(:, 1) - 2, vertexData(:, 2) + 1, vertexData(:, 3) + 1.5, 'FaceColor', 'none');
 
             % carts
             PlaceObject("cart.ply", [0,-2,0]);
