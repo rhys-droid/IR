@@ -30,7 +30,7 @@ classdef treeBotIntegrated < handle
             robot.PlotAndColourRobot();
             hold on
 
-            printingOffset = [0.06,0.05,0.03];
+            printingOffset = [0.06,0.05,0.06];
 
             birdhousePos1 = trajM(1,:) - printingOffset;
             birdhousePos2 = trajM(3,:) - printingOffset;
