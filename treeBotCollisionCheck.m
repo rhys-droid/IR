@@ -2,6 +2,8 @@ classdef treeBotCollisionCheck < handle
 
     properties
         emergencyStopPressed = false;
+        % % a = arduino;
+        
 
     end
 
@@ -65,8 +67,12 @@ classdef treeBotCollisionCheck < handle
             partIndexCounter=1;
 
             self.detectES();
+
         
             for j = 1:size(trajM, 1)
+
+                
+
                 initalTreeBotDest = trajM(j, :);
                 
                 q1 = robot.model.ikcon(transl(initialTreeBotPos));
@@ -77,6 +83,8 @@ classdef treeBotCollisionCheck < handle
                 n = 1;
                 while n <= steps
 
+                    % self.readArduinoPin();
+                    
                     if self.CheckCollision(robot.model, birdOnBranchPoints) % Detecting if there is a collision
                         
                         currentPos = robot.model.fkine(robot.model.getpos).t; %Updating matrix to continue from current position to desried destination
@@ -98,7 +106,7 @@ classdef treeBotCollisionCheck < handle
             
                     end  
         
-                    if self.emergencyStopPressed
+                    if self.emergencyStopPressed %|| realESpressed
                         disp("Emergency stop button pressed!! Stopping Robot.");
                         return;
                     end
@@ -150,10 +158,11 @@ classdef treeBotCollisionCheck < handle
 
         
         function detectES(self)
-
+            
+            %% Software eStop
             f = figure('KeyPressFcn', @(src, event) self.detectedEM(src, event)); % Creating emergency stop figure
             PlaceObject('emergencyStopButton.ply');
-            
+
         end
         
         function detectedEM(self,~, event)
@@ -162,6 +171,18 @@ classdef treeBotCollisionCheck < handle
                 self.emergencyStopPressed = true;
 
             end
+
+            % realESpressed = readDigitalPin(arduino, 'D8');
+            % 
+            % if realESpressed == 1
+            %     self.emergencyStopPressed = true;
+            % end
+
+            
+            % if realESpressed == 1
+            %     disp("Hardware Emergency Stop Pressed!")
+            %     self.emergencyStopPressed = true;
+            % end
         end
 
         function updatePartMovement(self, robot, qValues, verticies, birdMatrix)
@@ -171,5 +192,15 @@ classdef treeBotCollisionCheck < handle
 
 
         end
+
+        function readArduinoPin(self)
+
+            % realESpressed = readDigitalPin(arduino, 'D8')
+            disp("In readArduino");
+            % if realESpressed == 1
+            %     self.emergencyStopPressed = true;
+            % end
+        end
+
     end
 end

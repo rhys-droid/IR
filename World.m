@@ -2,7 +2,7 @@ classdef World < handle
     properties
         workspace = [-3 3 -3 3 0 3];
         robot_dobot;
-        robot_treebot;
+        % robot_treebot;
         scale = 0.1;
         qinit = [];
         qinit2 = [];
@@ -20,9 +20,9 @@ classdef World < handle
             self.robot_dobot.model.base = trotx(pi/2) * transl(0, 1, 1.6);
             self.qinit = zeros(1, self.robot_dobot.model.n);
             hold on;
-            self.robot_treebot = TreeBot;
-            self.robot_treebot.model.base = transl(-0.15, 0, 1);
-            self.qinit2 = zeros(1,self.robot_treebot.model.n);
+            % self.robot_treebot = TreeBot;
+            % self.robot_treebot.model.base = transl(-0.15, 0, 1);
+            % self.qinit2 = zeros(1,self.robot_treebot.model.n);
 
 
             % self.robot.PlotAndColourRobot();
@@ -67,9 +67,9 @@ classdef World < handle
        function robot = getRobot(self)
            robot = self.robot_dobot;
        end
-       function robot2 = getRobot2(self)
-           robot2 = self.robot_treebot;
-       end
+       % function robot2 = getRobot2(self)
+       %     robot2 = self.robot_treebot;
+       % end
 
    end
 end

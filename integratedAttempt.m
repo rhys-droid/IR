@@ -12,11 +12,14 @@ birdhouseDest1 = [1.1,0.7,0.3];
 birdhousePos2 = [-0.1, 0.7, 0.1];
 birdhouseDest2 = [1, 0.6, 0];
 
-trajM = [birdhousePos1; birdhouseDest1; birdhousePos2; birdhouseDest2];
-collisionChecker = treeBotCollisionCheck(trajM, birdOnBranchPosition);
-hold on
+% realESpressed = readDigitalPin(arduino, 'D8')
 
-collisionChecker.runRobot()
+trajM = [birdhousePos1; birdhouseDest1; birdhousePos2; birdhouseDest2];
+
+treeBotCollisionCheck(trajM, birdOnBranchPosition);
+% hold on
+
+% collisionChecker.runRobot()
 
 axis equal
 
