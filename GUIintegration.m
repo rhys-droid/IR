@@ -3,6 +3,10 @@ classdef GUIintegration < handle
         robot;  % TreeBot object
         app;    % GUI app object
         q;      % Joint angles
+        stepSize = 0.01;
+        direction = 'x';
+        currentPos = [];
+        newPos = [];
     end
 
     methods
@@ -42,7 +46,22 @@ classdef GUIintegration < handle
             self.app.Link4Slider.ValueChangingFcn = @(src, event) self.updateJoint(4, event.Value);
             self.app.Link5Slider.ValueChangingFcn = @(src, event) self.updateJoint(5, event.Value);
             self.app.Link6Slider.ValueChangingFcn = @(src, event) self.updateJoint(6, event.Value);
+
+            self.app.XButton.ButtonPushedFcn = @(~, ~) self.moveEndEffector('x');
+            self.app.XButton_2.ButtonPushedFcn = @(~, ~) self.moveEndEffector('-x');
+            self.app.YButton.ButtonPushedFcn = @(~, ~) self.moveEndEffector('y');
+            self.app.YButton_2.ButtonPushedFcn = @(~, ~) self.moveEndEffector('-y');
+            self.app.ZButton.ButtonPushedFcn = @(~, ~) self.moveEndEffector('z');
+            self.app.ZButton_2.ButtonPushedFcn = @(~, ~) self.moveEndEffector('-z');
+
+            self.app.JogamountmEditField.ValueChangedFcn = @(src, event) self.updateJog(event.Value);
         end
+
+
+        function updateJog(self, inputVal)
+            self.stepSize = inputVal;
+        end
+
 
         % Update the corresponding joint angle when the slider is moved
         function updateJoint(self, jointIndex, value)
@@ -65,6 +84,134 @@ classdef GUIintegration < handle
             self.app.Link4Slider.Value = qDegrees(4);
             self.app.Link5Slider.Value = qDegrees(5);
             self.app.Link6Slider.Value = qDegrees(6);
+        end
+
+
+
+
+        function moveEndEffector(self, pressedDirect)
+            
+            self.direction = pressedDirect;
+
+            self.currentPos = self.robot.model.fkine(self.q);
+            currentJoints = self.robot.model.ikcon(self.currentPos.T);
+                
+            disp(self.stepSize);
+            disp(self.direction);
+
+            switch self.direction
+                case 'x'
+
+                       
+                    self.newPos = self.currentPos.T;
+
+                    
+                    self.newPos(1, 4) = self.newPos(1, 4) + self.stepSize;
+                    newJoints = self.robot.model.ikcon(self.newPos);
+                    moveNewPos = jtraj(currentJoints, newJoints, 30);
+
+                    for step = 1:size(moveNewPos, 1)
+                        self.robot.model.animate(moveNewPos(step,:));
+                        drawnow();
+                        pause(0.05);
+
+                    end
+
+
+
+                case '-x'
+
+
+                    self.newPos = self.currentPos.T;
+
+
+                    self.newPos(1, 4) = self.newPos(1, 4) - self.stepSize;
+                    newJoints = self.robot.model.ikcon(self.newPos);
+                    moveNewPos = jtraj(currentJoints, newJoints, 30);
+
+                    for step = 1:size(moveNewPos, 1)
+                        self.robot.model.animate(moveNewPos(step,:));
+                        drawnow();
+                        pause(0.05);
+
+                    end
+
+                case 'y'
+
+                    self.newPos = self.currentPos.T;
+
+                    
+                    self.newPos(2, 4) = self.newPos(2, 4) + self.stepSize;
+                    newJoints = self.robot.model.ikcon(self.newPos);
+                    moveNewPos = jtraj(currentJoints, newJoints, 30);
+
+                    for step = 1:size(moveNewPos, 1)
+                        self.robot.model.animate(moveNewPos(step,:));
+                        drawnow();
+                        pause(0.05);
+
+                    end
+
+
+                case '-y'
+
+                    self.newPos = self.currentPos.T;
+
+                    
+                    self.newPos(2, 4) = self.newPos(2, 4) - self.stepSize;
+                    newJoints = self.robot.model.ikcon(self.newPos);
+                    moveNewPos = jtraj(currentJoints, newJoints, 30);
+
+                    for step = 1:size(moveNewPos, 1)
+                        self.robot.model.animate(moveNewPos(step,:));
+                        drawnow();
+                        pause(0.05);
+
+                    end
+
+
+
+                case 'z'
+                    self.newPos = self.currentPos.T;
+
+                    
+                    self.newPos(3, 4) = self.newPos(3, 4) + self.stepSize;
+                    newJoints = self.robot.model.ikcon(self.newPos);
+                    moveNewPos = jtraj(currentJoints, newJoints, 30);
+
+                    for step = 1:size(moveNewPos, 1)
+                        self.robot.model.animate(moveNewPos(step,:));
+                        drawnow();
+                        pause(0.05);
+
+                    end
+
+
+
+
+                case '-z'
+
+                    self.newPos = self.currentPos.T;
+
+                    
+                    self.newPos(3, 4) = self.newPos(3, 4) - self.stepSize;
+                    newJoints = self.robot.model.ikcon(self.newPos);
+                    moveNewPos = jtraj(currentJoints, newJoints, 30);
+
+                    for step = 1:size(moveNewPos, 1)
+                        self.robot.model.animate(moveNewPos(step,:));
+                        drawnow();
+                        pause(0.05);
+
+                    end
+
+
+
+            end
+            self.q = newJoints;
+            self.updateSliders();
+            self.currentPos = self.newPos;
+            currentJoints = newJoints;
         end
     end
 end
