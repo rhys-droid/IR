@@ -61,24 +61,42 @@ classdef treeBotCollisionCheck < handle
 
             birdOnBranchPoints = cloudPoints.loadPointClouds('birdOnBranch.ply', birdOnBranchPos(1,:));
             
+            % PlaceObject('tree.ply', [0.2,1.7,0]);
+            
             currentPos = robot.model.fkine(robot.model.getpos).t.';
-            initialTreeBotPos = currentPos;
+            % initialTreeBotPos = currentPos;
 
             partIndexCounter=1;
 
             self.detectES();
 
+            qValues = [0, 0, 0, 0,0,0, 0;
+                -1.38,0.06,0.04,-0.09,-0.43,-0.01,0; ...
+                1.00, 0.1, 0.36,0.94,0.43,-0.01,0; ...
+                -1.38,0.06,0.04,-0.09,0.43,-0.01,0; ...
+                0.87, 0.56,0.31,1.22,0,0,0];
+
+
+
+
+                % 1.50,0.12,0.53,1.08,0.43,-0.01,0];
+
         
             for j = 1:size(trajM, 1)
 
+                initalTreeBotDest = trajM(2, :);
                 
-
-                initalTreeBotDest = trajM(j, :);
-                
-                q1 = robot.model.ikcon(transl(initialTreeBotPos));
-                q2 = robot.model.ikcon(transl(initalTreeBotDest));
+                % q1 = robot.model.ikcon(transl(initialTreeBotPos))
+                % q2 = robot.model.ikcon(transl(initalTreeBotDest))
+                q1 = qValues(j,:);
+                q2 = qValues(j+1,:);
                 steps = 100;
                 qMatrix = jtraj(q1, q2, steps); % Obtaining the joint space trajectory
+
+                % qMatrix = [-1.38,0.06,0.04,-0.09,-0.43,-0.01,0; ...
+                %     1.00, 0.1, 0.36,0.94,0.43,-0.01,0; ...
+                %     -1.38,0.06,0.04,-0.09,0.43,-0.01,0; ...
+                %     1.50,0.12,0.53,1.08,0.43,-0.01,0];
 
                 n = 1;
                 while n <= steps
@@ -87,11 +105,15 @@ classdef treeBotCollisionCheck < handle
                     
                     if self.CheckCollision(robot.model, birdOnBranchPoints) % Detecting if there is a collision
                         
-                        currentPos = robot.model.fkine(robot.model.getpos).t; %Updating matrix to continue from current position to desried destination
-                        q1 = robot.model.ikcon(transl(currentPos));
-                        q2 = robot.model.ikcon(transl(initalTreeBotDest));
-                        qMatrix = jtraj(q1, q2, steps);
-                        n = 1;
+                        % currentPos = robot.model.fkine(robot.model.getpos).t; %Updating matrix to continue from current position to desried destination
+                        % q1 = robot.model.ikcon(transl(currentPos));
+                        % q2 = robot.model.ikcon(transl(initalTreeBotDest));                        
+                        % qTempMatrix = jtraj(q1, q2, steps);
+                        % robot.model.animate(qTempMatrix(n, :));
+                        % % 
+                        n = n + 1;
+                        disp("inself.collision");
+                        pause(0.01);
 
                     else
                         % q = [0, -pi/4, pi/6, 0,0,0, 0];
@@ -115,7 +137,7 @@ classdef treeBotCollisionCheck < handle
                 end
                 
                 
-                initialTreeBotPos = initalTreeBotDest; % Updating position
+                % initialTreeBotPos = initalTreeBotDest; % Updating position
                 partIndexCounter=partIndexCounter+1;
             end
         end
@@ -135,18 +157,19 @@ classdef treeBotCollisionCheck < handle
                 crash = true;
                 disp("Crash");
                 currentPos = robot.fkine(robot.getpos).t; 
-                projectedPos = currentPos - 0.03; % clearway of 0.3
+                projectedPos = currentPos - 0.04; % clearway of 0.3
 
                 q1 = robot.ikcon(transl(currentPos));
                 q2 = robot.ikcon(transl(projectedPos));
 
-                steps = 30;
+                steps = 100;
                 qMatrixCollision = jtraj(q1, q2, steps); %Creating a temporary trajectory of avoiding .ply file      
                     
                 for o = 1:steps % Move the robot out of the way
                     robot.animate(qMatrixCollision(o, :));
                     pause(0.01);
                 end
+                pause(0.1);
     
              end
 

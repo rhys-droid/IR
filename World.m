@@ -57,7 +57,7 @@ classdef World < handle
             % % trees
             PlaceObject('tallerTree.ply', [0.5,-1.2,0]);
             PlaceObject('tree.ply', [0.2,1.7,0]);
-            PlaceObject('tree.ply', [-2,2,0]);
+            % PlaceObject('tree.ply', [-2,2,0]);
             PlaceObject('birdOnBranch.ply', [0.2,-1.2,1.5]);
 
             % carts

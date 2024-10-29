@@ -1,10 +1,10 @@
-birdOnBranchPosition = [0.2,-1.2,1.5;0,0,0];
+birdOnBranchPosition = [0.5,-0.1,1.5;0,0,0];
            
-birdhousePos1 = [-1.2,-1.1,0.9];
-birdhouseDest1 = [0,1.1,1.3];
+birdhousePos1 = [-1.2,-0.4,0.9];
+birdhouseDest1 = [0.05,1.2,1.3];
 
-birdhousePos2 = [-1.2,-0.9,0.9];
-birdhouseDest2 = [-2,1.7,0];
+birdhousePos2 = [-1.2,-0.2,0.9];
+birdhouseDest2 = [0.1,1,2];
 
 % realESpressed = readDigitalPin(arduino, 'D8')
 
