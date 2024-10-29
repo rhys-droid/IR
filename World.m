@@ -18,7 +18,7 @@ classdef World < handle
        function BuildWorld(self)
             self.robot_dobot = LinearDobot;
             self.robot_dobot.model.base = trotx(pi/2) * transl(0, 1, 1.6);
-            self.qinit = zeros(1, self.robot_dobot.model.n);
+            % self.qinit = zeros(1, self.robot_dobot.model.n);
             hold on;
             % self.robot_treebot = TreeBot;
             % self.robot_treebot.model.base = transl(-0.15, 0, 1);
@@ -54,12 +54,24 @@ classdef World < handle
             % vertexData = (Rz * vertexData')';
             % trisurf(faceData, vertexData(:, 1) - 2, vertexData(:, 2) + 1, vertexData(:, 3) + 1.5, 'FaceColor', 'none');
 
+            % % trees
+            PlaceObject('tallerTree.ply', [0.5,-1.2,0]);
+            PlaceObject('tree.ply', [0.2,1.7,0]);
+            PlaceObject('tree.ply', [-2,2,0]);
+            PlaceObject('birdOnBranch.ply', [0.2,-1.2,1.5]);
+
             % carts
-            PlaceObject("cart.ply", [0,-2,0]);
-            [faceData, vertexData, ~] = plyread("cart.ply");
-            Rz = [-1 0 0; 0 -1 0; 0 0 1];
-            vertexData = (Rz * vertexData')';
-            trisurf(faceData, vertexData(:, 1)-0.37, vertexData(:, 2) + 0.48, vertexData(:, 3));
+            cartpos1 = [-1,-1.5,0];
+            % cartpos2 = cartpos1 * [-1,-1,-1]';
+            cartpos2 = [1.4,-1,0];
+            cart1 = PlaceObject("cart.ply", cartpos1);
+            cart2 = PlaceObject("cart.ply", cartpos2);
+            vertsCart = [get(cart2,'Vertices'), ones(size(get(cart2,'Vertices'),1),1)] *trotz(pi);
+            set(cart2,'Vertices',vertsCart(:,1:3));
+            % [faceData, vertexData, ~] = plyread("cart.ply");
+            % Rz = [-1 0 0; 0 -1 0; 0 0 1];
+            % vertexData = (Rz * vertexData')';
+            % trisurf(faceData, vertexData(:, 1)-0.37, vertexData(:, 2) + 0.48, vertexData(:, 3));
 
        end
 

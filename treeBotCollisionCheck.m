@@ -9,7 +9,7 @@ classdef treeBotCollisionCheck < handle
 
     methods 
         function self = treeBotCollisionCheck(trajM, birdOnBranchPos)
-            clf	
+            	
 
             if nargin < 1 % Set default values if arguments are not provided
                 error("Must initalise class object with desired variables")
@@ -25,17 +25,17 @@ classdef treeBotCollisionCheck < handle
     methods
 
         function runRobot(self, trajM, birdOnBranchPos)
-            clf
+            
         
             robot = TreeBot;
-            robot.model.base = transl(-0.15, 0, 1);
+            robot.model.base = transl(-1.2, 0, 1);
             robot.PlotAndColourRobot();
             hold on
 
-            printingOffset = [0.06,0.05,0.06];
+            % printingOffset = [0.06,0.05,0.06];
 
-            birdhousePos1 = trajM(1,:) - printingOffset;
-            birdhousePos2 = trajM(3,:) - printingOffset;
+            birdhousePos1 = trajM(1,:); % - printingOffset;
+            birdhousePos2 = trajM(3,:); % - printingOffset;
 
             % birdhousePos2 = birdhousePos1 + birdHousePrintingOffset;
             % birdhouseDest2 = birdhouseDest1 + birdHousePrintingOffset;
