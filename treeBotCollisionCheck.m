@@ -28,7 +28,7 @@ classdef treeBotCollisionCheck < handle
             
         
             robot = TreeBot;
-            robot.model.base = transl(-1.2, 0, 1);
+            robot.model.base = transl(-1.2, 0.5, 1);
             robot.PlotAndColourRobot();
             hold on
 
@@ -94,6 +94,7 @@ classdef treeBotCollisionCheck < handle
                         n = 1;
 
                     else
+                        % q = [0, -pi/4, pi/6, 0,0,0, 0];
                         robot.model.animate(qMatrix(n, :));
                         n = n + 1;
                         pause(0.01);

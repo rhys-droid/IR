@@ -4,16 +4,11 @@
 % Lab 9 - Question 1 - Resolved Motion Rate Control in 6DOF
 function Lab9Solution_Question1()
 % 1.1) Set parameters for the simulation
-    
-    robot = TreeBot;
 
-    q = zeros(7,1);
+robot = TreeBot;
+robot.PlotAndColourRobot();        % Load robot model
 
-    % robot.model.plot(q);        % Load robot model
-    robot.model.teach(q);
-    hold on
-    pause(1);
-end
+robot.model.teach(0, -pi/4, pi/6, 0,0,0);
 
 % t = 10;             % Total time (s)
 % deltaT = 0.02;      % Control frequency -> driving how fast the robot moves

@@ -10,11 +10,11 @@ world.BuildWorld();
 
 birdOnBranchPosition = [0.2,-1.2,1.5;0,0,0];
            
-birdhousePos1 = [-1.2,-1.1,0.9];
+birdhousePos1 = [-1.2,-0.4,0.9];
 birdhouseDest1 = [0,1.1,1.3];
 
-birdhousePos2 = [-1.2,-0.9,0.9];
-birdhouseDest2 = [-2,1.7,0];
+birdhousePos2 = [-1.2,-0.2,0.9];
+birdhouseDest2 = [-1.5,1.5,0];
 
 % birdHousePrintingOffset = [0.1,0.5,0];
 % 
