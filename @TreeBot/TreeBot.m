@@ -18,7 +18,7 @@ function self =TreeBot(baseTr)
             if nargin < 1			
 				baseTr = eye(4);				
             end
-            self.model.base = self.model.base.T; %* baseTr * trotx(pi/2) * troty(pi/2);;
+            self.model.base = self.model.base.T; 
 
             self.PlotAndColourRobot();  
     
@@ -35,7 +35,7 @@ end
 
             L1 = Link('d',0.3,'a',0,'alpha',pi/2,'qlim',[-2*pi 2*pi]);
             L2 = Link('d', 0, 'a', 0.4, 'alpha', 0, 'qlim', [0, pi/2]);
-            L3 = Link('d', 0, 'a', 0.4, 'alpha', 0, 'qlim', [0, pi/2]); %maybe -pi/4
+            L3 = Link('d', 0, 'a', 0.4, 'alpha', 0, 'qlim', [0, pi/2]);
             L4 = Link('d', 0, 'a', 0, 'alpha', pi/2, 'qlim', [-pi/4, 5*pi/4]);
             L5 = Link('d', 0.2, 'a', 0, 'alpha', -pi/2, 'qlim', [-pi, pi]);
             L6 = Link('d', 0.2, 'a', 0, 'alpha', pi/2, 'qlim', [-pi/4, pi/4]);

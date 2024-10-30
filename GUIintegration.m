@@ -1,46 +1,47 @@
 classdef GUIintegration < handle
     properties
-        robot;  % TreeBot object
-        app;    % GUI app object
-        q;      % Joint angles
+        treebot; 
+        app;    
+        q;      
         stepSize = 0.01;
         direction = 'x';
         currentPos = [];
         newPos = [];
         EstopPressed = false;
+        startPrintingCallback;
     end
 
     methods
         % Constructor
-        function self = GUIintegration()
-            clf;  % Clear the current figure
+        function self = GUIintegration(startPrintingCallback)
+            self.treebot = TreeBot;
+            clf; 
 
-            self.q = zeros(1, 7);  % Initialize joint angles to 0
-
-            self.runRobot();  % Initialize the robot
-            self.openGUI();   % Open the GUI
+            self.q = zeros(1, 7);  
+            self.startPrintingCallback = startPrintingCallback; 
+            %self.runRobot();  
+            self.openGUI();  
         end
 
         % Initialize the TreeBot robot
-        function runRobot(self)
-            addpath('TreeBot');  % Add the robot folder to path
+        % function runRobot(self)
+        %     addpath('TreeBot');  % Add the robot folder to path
+        % 
+        %     % Create the robot object
+        %     self.robot = TreeBot();
+        % 
+        %     % Plot the robot with the initial configuration
+        %     self.robot.PlotAndColourRobot();
+        %     self.robot.AnimateRobot(self.q);  % Plot the robot at initial pose
+        % 
+        %     % Ensure the sliders reflect the robot's initial pose
+        %     self.updateSliders();
+        % end
 
-            % Create the robot object
-            self.robot = TreeBot();
-
-            % Plot the robot with the initial configuration
-            self.robot.PlotAndColourRobot();
-            self.robot.AnimateRobot(self.q);  % Plot the robot at initial pose
-
-            % Ensure the sliders reflect the robot's initial pose
-            self.updateSliders();
-        end
-
-        % Open the GUI and set up the callbacks
         function openGUI(self)
-            self.app = GUI();  % Create the GUI object
+            self.app = GUI();  
 
-            % Set slider callbacks to update joint angles
+           
             self.app.Link1Slider.ValueChangingFcn = @(src, event) self.updateJoint(1, event.Value);
             self.app.Link2Slider.ValueChangingFcn = @(src, event) self.updateJoint(2, event.Value);
             self.app.Link3Slider.ValueChangingFcn = @(src, event) self.updateJoint(3, event.Value);
@@ -57,18 +58,21 @@ classdef GUIintegration < handle
 
             self.app.JogamountmEditField.ValueChangedFcn = @(src, event) self.updateJog(event.Value);
 
-            self.app.Button.ButtonPushedFcn = @(src, event) self.updateEstop(true);
+            self.app.Button.ButtonPushedFcn = @(~, ~) self.updateEstop(true);
 
-            self.app.ResumeButton.ButtonPushedFcn = @(src, event) self.updateEstop(false);
+            self.app.ResumeButton.ButtonPushedFcn = @(~, ~) self.updateEstop(false);
             
-            self.app.BirdhouseButton.ButtonPushedFcn = @(src, event) self.runProgram('Birdhouse');
+            % self.app.BirdhouseButton.ButtonPushedFcn = @(src, event) self.runProgram('Birdhouse');
+            self.app.BirdhouseButton.ButtonPushedFcn = @(~, ~) self.startPrinting();
 
-            self.app.BeehiveButton.ButtonPushedFcn = @(src, event) self.runProgram('Beehive');
 
             
         end
 
-
+            function startPrinting(self)
+                disp('Print Birdhouse button pressed.');
+                self.startPrintingCallback(); 
+            end
 
 
 
@@ -88,28 +92,33 @@ classdef GUIintegration < handle
         end
 
         function updateEstop(self, pressState)
-            disp(self.EstopPressed);
-            self.EstopPressed = pressState; 
-            disp(self.EstopPressed);
+            self.EstopPressed = pressState;  
+            if self.EstopPressed
+                disp('E-stop activated!');
+            else
+                disp('Resuming from E-stop.');
+            end
         end
 
 
 
-        % Update the corresponding joint angle when the slider is moved
+      
         function updateJoint(self, jointIndex, value)
-            % Update the joint angle in radians
+         
             self.q(jointIndex) = deg2rad(value);
-
-            % Use animate to smoothly update the robot configuration
-            self.robot.AnimateRobot(self.q);
+            try
+                self.treebot.model.animate(self.q);
+            catch
+                warning('Animation failed.');
+            end
         end
 
-        % Method to update the slider values based on robot state
+       
         function updateSliders(self)
-            % Convert the current joint angles from radians to degrees
+        
             qDegrees = rad2deg(self.q);
 
-            % Update each slider with the current joint angle
+           
             self.app.Link1Slider.Value = qDegrees(1);
             self.app.Link2Slider.Value = qDegrees(2);
             self.app.Link3Slider.Value = qDegrees(3);
@@ -125,8 +134,8 @@ classdef GUIintegration < handle
             
             self.direction = pressedDirect;
 
-            self.currentPos = self.robot.model.fkine(self.q);
-            currentJoints = self.robot.model.ikcon(self.currentPos.T);
+            self.currentPos = self.treebot.model.fkine(self.q);
+            currentJoints = self.treebot.model.ikcon(self.currentPos.T);
                 
             disp(self.stepSize);
             disp(self.direction);
@@ -139,7 +148,7 @@ classdef GUIintegration < handle
 
                     
                     self.newPos(1, 4) = self.newPos(1, 4) + self.stepSize;
-                    newJoints = self.robot.model.ikcon(self.newPos);
+                    newJoints = self.treebot.model.ikcon(self.newPos);
                     moveNewPos = jtraj(currentJoints, newJoints, 30);
 
 
@@ -151,7 +160,7 @@ classdef GUIintegration < handle
 
 
                     self.newPos(1, 4) = self.newPos(1, 4) - self.stepSize;
-                    newJoints = self.robot.model.ikcon(self.newPos);
+                    newJoints = self.treebot.model.ikcon(self.newPos);
                     moveNewPos = jtraj(currentJoints, newJoints, 30);
 
 
@@ -161,7 +170,7 @@ classdef GUIintegration < handle
 
                     
                     self.newPos(2, 4) = self.newPos(2, 4) + self.stepSize;
-                    newJoints = self.robot.model.ikcon(self.newPos);
+                    newJoints = self.treebot.model.ikcon(self.newPos);
                     moveNewPos = jtraj(currentJoints, newJoints, 30);
 
 
@@ -172,7 +181,7 @@ classdef GUIintegration < handle
 
                     
                     self.newPos(2, 4) = self.newPos(2, 4) - self.stepSize;
-                    newJoints = self.robot.model.ikcon(self.newPos);
+                    newJoints = self.treebot.model.ikcon(self.newPos);
                     moveNewPos = jtraj(currentJoints, newJoints, 30);
 
 
@@ -181,7 +190,7 @@ classdef GUIintegration < handle
 
                     
                     self.newPos(3, 4) = self.newPos(3, 4) + self.stepSize;
-                    newJoints = self.robot.model.ikcon(self.newPos);
+                    newJoints = self.treebot.model.ikcon(self.newPos);
                     moveNewPos = jtraj(currentJoints, newJoints, 30);
 
 
@@ -192,13 +201,13 @@ classdef GUIintegration < handle
 
                     
                     self.newPos(3, 4) = self.newPos(3, 4) - self.stepSize;
-                    newJoints = self.robot.model.ikcon(self.newPos);
+                    newJoints = self.treebot.model.ikcon(self.newPos);
                     moveNewPos = jtraj(currentJoints, newJoints, 30);
 
             end
             for step = 1:size(moveNewPos, 1)
 
-                   self.robot.model.animate(moveNewPos(step,:));
+                   self.treebot.model.animate(moveNewPos(step,:));
                    drawnow();
                    pause(0.05);
                    if self.EstopPressed
